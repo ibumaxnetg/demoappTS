@@ -1,10 +1,4 @@
-interface UserInputData {
-  title: string;
-  description: string;
-  manday: number;
-  img?: File;
-  imgCheck?: boolean;
-}
+import { UserInputData } from "./components/DataTypes";
 
 class ProjectState {}
 
@@ -58,18 +52,25 @@ class ProjectInput {
     const inputTtlTex = this.inputTtlElem.value;
     const inputDescTex = this.inputDescElem.value;
     const inputMDTex = this.inputMDElem.value;
-    const inputImgFile = this.inputImgElem.files;
+    const inputImgFile = this.inputImgElem.files
+      ? this.inputImgElem.files[0]
+      : undefined;
     const inputImgDelChk = this.inputImgDelElem.checked;
 
     const useInputData: UserInputData = {
       title: inputTtlTex,
       description: inputDescTex,
       manday: +inputMDTex,
-      img: inputImgFile,
+      imgFile: inputImgFile,
       imgCheck: inputImgDelChk ? inputImgDelChk : false
     };
-    console.log("はいクリック", useInputData);
-    this.clearInput();
+
+    if (inputTtlTex && inputDescTex && inputMDTex) {
+      console.log("はいクリック", useInputData);
+      this.clearInput();
+    } else {
+      alert("入力が正しくありません");
+    }
   }
 
   attach() {
@@ -80,15 +81,44 @@ class ProjectInput {
     this.inputTtlElem.value = "";
     this.inputDescElem.value = "";
     this.inputMDElem.value = "";
-    this.inputImgElem.files = null;
+    this.inputImgElem.value = "";
     this.inputImgDelElem.checked = false;
   }
 }
 
-class ProjectList {}
+class ProjectList {
+  baseElements: HTMLTemplateElement;
+  outputElements: HTMLDivElement;
+  editElements: HTMLElement;
+
+  constructor(public listType: string) {
+    this.baseElements = document.getElementById(
+      "project-list"
+    )! as HTMLTemplateElement;
+    this.outputElements = document.getElementById("app")! as HTMLDivElement;
+
+    const editElements = document.importNode(this.baseElements.content, true);
+    this.editElements = editElements.firstElementChild! as HTMLElement;
+    this.editElements.id = `${listType}-projects`;
+
+    console.log(this.editElements);
+    this.renderContent();
+    this.attach();
+  }
+
+  renderContent() {
+    const headerCont = this.editElements.querySelector("h2")!;
+    headerCont.textContent =
+      this.listType === "active" ? "稼働中プロジェクト" : "終了プロジェクト";
+  }
+
+  attach() {
+    this.outputElements.insertAdjacentElement("beforeend", this.editElements);
+  }
+}
 
 // const prjState = new ProjectState();
-// new ProjectList('active');
-// new ProjectList('finished');
+new ProjectList("active");
+new ProjectList("finished");
 
 const PrjInput = new ProjectInput();
