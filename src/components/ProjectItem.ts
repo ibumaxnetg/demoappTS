@@ -1,6 +1,7 @@
 import { Project } from "../types/Types";
+import { Draggable } from "../types/DragTypes";
 
-export class ProjectItem {
+export class ProjectItem implements Draggable {
   baseElements: HTMLTemplateElement;
   outputElements: HTMLUListElement;
   editElements: HTMLLIElement;
@@ -17,13 +18,37 @@ export class ProjectItem {
 
     const editEl = document.importNode(this.baseElements.content, true);
     this.editElements = editEl.firstElementChild! as HTMLLIElement;
+    this.editElements.draggable = true;
 
     this.getProject = project;
 
     // console.log("ProjectItem:", this.editElements);
 
+    this.configure();
     this.renderContent();
     this.attach();
+  }
+
+  dragStartHandler(event: DragEvent): void {
+    event.dataTransfer!.setData("text/plain", this.getProject.id);
+    event.dataTransfer!.dropEffect = "move";
+    // console.log("dragStart");
+  }
+
+  dragEndHandler(event: DragEvent): void {
+    event.preventDefault();
+    // console.log("dragEnd", dragData);
+  }
+
+  configure() {
+    this.editElements.addEventListener(
+      "dragstart",
+      this.dragStartHandler.bind(this)
+    );
+    this.editElements.addEventListener(
+      "dragend",
+      this.dragEndHandler.bind(this)
+    );
   }
 
   renderContent() {

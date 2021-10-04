@@ -1,15 +1,16 @@
 import { Project, ProjectStatus } from "../types/Types";
 import { prjState } from "../state/ProjectState";
 import { ProjectItem } from "../components/ProjectItem";
+import { DragTarget } from "../types/DragTypes";
 
-export class ProjectList {
+export class ProjectList implements DragTarget {
   baseElements: HTMLTemplateElement;
   outputElements: HTMLDivElement;
   editElements: HTMLElement;
 
   assignedProjects: Project[];
 
-  constructor(public listType: string) {
+  constructor(private listType: string) {
     this.baseElements = document.getElementById(
       "project-list"
     )! as HTMLTemplateElement;
@@ -36,10 +37,48 @@ export class ProjectList {
           return project.state === ProjectStatus.Finished;
         }
       });
-      console.log(tmpProjects);
+
       this.assignedProjects = tmpProjects;
       this.renderProjects();
     });
+
+    this.editElements.addEventListener(
+      "dragover",
+      this.dragOverHandler.bind(this)
+    );
+    this.editElements.addEventListener(
+      "dragleave",
+      this.dragLeaveHandler.bind(this)
+    );
+    this.editElements.addEventListener("drop", this.dropHandler.bind(this));
+  }
+
+  dragOverHandler(event: DragEvent): void {
+    event.preventDefault();
+    if (event.dataTransfer && event.dataTransfer.types[0] === "text/plain") {
+      const overEl = this.editElements.querySelector("ul")!;
+      overEl.classList.add("droppable");
+      // console.log(event.dataTransfer);
+    }
+  }
+
+  dropHandler(event: DragEvent): void {
+    event.preventDefault();
+    if (event.dataTransfer && event.dataTransfer.types[0] === "text/plain") {
+      const dropEl = this.editElements.querySelector("ul")!;
+      dropEl.classList.remove("droppable");
+      const dragData: string = event.dataTransfer!.getData("text/plain");
+      // console.log("drop", dragData);
+      prjState.moveProject(dragData, this.listType);
+    }
+  }
+
+  dragLeaveHandler(event: DragEvent): void {
+    event.preventDefault();
+    if (event.dataTransfer && event.dataTransfer.types[0] === "text/plain") {
+      const leaveEl = this.editElements.querySelector("ul")!;
+      leaveEl.classList.remove("droppable");
+    }
   }
 
   renderContent() {

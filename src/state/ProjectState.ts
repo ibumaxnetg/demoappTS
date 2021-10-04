@@ -46,6 +46,10 @@ export class ProjectState {
       // console.log("ProjectState updateListeners:", this.ListenerFunctions);
     }
   }
+
+  moveProject(projectId: string, listType: string) {
+    console.log("ProjectState moveProject:", projectId, listType);
+  }
 }
 
 export const prjState = ProjectState.getInstance();
