@@ -20,7 +20,7 @@ export class ProjectItem {
 
     this.getProject = project;
 
-    console.log("ProjectItem:", this.editElements);
+    // console.log("ProjectItem:", this.editElements);
 
     this.renderContent();
     this.attach();

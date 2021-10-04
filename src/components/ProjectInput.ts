@@ -73,7 +73,7 @@ export class ProjectInput {
         useInputData.imgFile,
         useInputData.imgCheck
       );
-      console.log("ProjectInput:", prjState.projectContainer);
+      // console.log("ProjectInput:", prjState.projectContainer);
 
       this.clearInput();
     } else {

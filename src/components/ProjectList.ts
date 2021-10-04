@@ -1,4 +1,4 @@
-import { Project } from "../types/Types";
+import { Project, ProjectStatus } from "../types/Types";
 import { prjState } from "../state/ProjectState";
 import { ProjectItem } from "../components/ProjectItem";
 
@@ -27,8 +27,17 @@ export class ProjectList {
   }
 
   configure() {
-    this.assignedProjects = prjState.projectContainer;
     prjState.addListener((project: Project[]) => {
+      const tmpProjects = prjState.projectContainer.filter((project) => {
+        if (this.listType === "active") {
+          return project.state === ProjectStatus.Active;
+        }
+        if (this.listType === "finished") {
+          return project.state === ProjectStatus.Finished;
+        }
+      });
+      console.log(tmpProjects);
+      this.assignedProjects = tmpProjects;
       this.renderProjects();
     });
   }

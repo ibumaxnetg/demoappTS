@@ -20,8 +20,8 @@ export class ProjectState {
     title: string,
     description: string,
     manday: number,
-    imgFile: File | null,
-    imgCheck: boolean
+    imgFile?: File | null,
+    imgCheck?: boolean
   ) {
     const newProject = new Project(
       id,
