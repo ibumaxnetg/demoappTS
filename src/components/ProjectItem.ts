@@ -19,6 +19,7 @@ export class ProjectItem implements Draggable {
     const editEl = document.importNode(this.baseElements.content, true);
     this.editElements = editEl.firstElementChild! as HTMLLIElement;
     this.editElements.draggable = true;
+    this.editElements.id = project.id;
 
     this.getProject = project;
 

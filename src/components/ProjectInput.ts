@@ -1,5 +1,6 @@
 import { UserInputData } from "../types/Types";
 import { prjState } from "../state/ProjectState";
+import {rundStrCreate} from '../util/Util';
 
 export class ProjectInput {
   baseElements: HTMLTemplateElement;
@@ -66,7 +67,7 @@ export class ProjectInput {
 
     if (inputTtlTex && inputDescTex && inputMDTex) {
       prjState.addProject(
-        Math.random().toString,
+        rundStrCreate(12),
         useInputData.title,
         useInputData.description,
         useInputData.manday,

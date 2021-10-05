@@ -15,7 +15,7 @@ export class ProjectState {
     return this.instance;
   }
 
-  private addProject(
+  addProject(
     id: string,
     title: string,
     description: string,
@@ -43,12 +43,24 @@ export class ProjectState {
   private updateListeners() {
     for (const listener of this.ListenerFunctions) {
       listener(this.projectContainer.slice());
-      // console.log("ProjectState updateListeners:", this.ListenerFunctions);
     }
+    // console.log('updateListeners:', this.ListenerFunctions);
   }
 
-  moveProject(projectId: string, listType: string) {
-    console.log("ProjectState moveProject:", projectId, listType);
+  moveProject(projectId: string, listType: 'active' | 'finished') {
+    const findProject = this.projectContainer.find((project) => {
+      if (project.id === projectId) {
+        return project;
+      }
+      return;
+    });
+
+    if (findProject) {
+      findProject.state = listType === 'active' ? ProjectStatus.Active: ProjectStatus.Finished;
+    }
+    this.updateListeners();
+    // console.log('moveProject:', findProject);
+    return;
   }
 }
 
