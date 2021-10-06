@@ -1,7 +1,8 @@
 import { Project, ProjectStatus } from "../types/Types";
-import { prjState } from "../state/ProjectState";
-import { ProjectItem } from "../components/ProjectItem";
 import { DragTarget } from "../types/DragTypes";
+import { ProjectItem } from "../components/ProjectItem";
+
+import { prjState } from "../app";
 
 export class ProjectList implements DragTarget {
   baseElements: HTMLTemplateElement;

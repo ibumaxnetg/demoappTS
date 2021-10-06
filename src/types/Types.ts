@@ -13,11 +13,15 @@ export class Project {
     public description: string,
     public manday: number,
     public state: ProjectStatus,
-    public regions: Date
+    public regions: any
   ) {}
 }
 
 export enum ProjectStatus {
   Active,
   Finished
+}
+
+export interface getQueryObject {
+  [key: string]: string;
 }

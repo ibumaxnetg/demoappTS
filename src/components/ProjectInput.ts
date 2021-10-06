@@ -1,5 +1,6 @@
-import { UserInputData } from "../types/Types";
-import { prjState } from "../state/ProjectState";
+import { UserInputData, ProjectStatus } from "../types/Types";
+import { prjState } from "../app";
+import { rundStrCreate } from "../util/Util";
 
 export class ProjectInput {
   baseElements: HTMLTemplateElement;
@@ -11,6 +12,10 @@ export class ProjectInput {
   inputMDElem: HTMLInputElement;
   inputImgElem: HTMLInputElement;
   inputImgDelElem: HTMLInputElement;
+
+  sendProjectId: string;
+  sendProjectStatus: ProjectStatus;
+  sendProjectRegions: Date | undefined;
 
   constructor() {
     this.baseElements = document.getElementById(
@@ -37,6 +42,10 @@ export class ProjectInput {
     this.inputImgDelElem = this.editElements.querySelector(
       "#photodel"
     )! as HTMLInputElement;
+
+    this.sendProjectId = "";
+    this.sendProjectStatus = ProjectStatus.Active;
+    this.sendProjectRegions = undefined;
 
     this.configure();
     this.attach();
@@ -66,7 +75,7 @@ export class ProjectInput {
 
     if (inputTtlTex && inputDescTex && inputMDTex) {
       prjState.addProject(
-        Math.random().toString,
+        rundStrCreate(12),
         useInputData.title,
         useInputData.description,
         useInputData.manday,
@@ -91,5 +100,15 @@ export class ProjectInput {
     this.inputMDElem.value = "";
     this.inputImgElem.value = "";
     this.inputImgDelElem.checked = false;
+  }
+
+  async renderContent(newProject: Project) {
+    this.inputTtlElem.value = newProject.title;
+    this.inputDescElem.value = newProject.description;
+    this.inputMDElem.value = newProject.manday.toString();
+    this.sendProjectId = newProject.id;
+    this.sendProjectStatus = newProject.status;
+    this.sendProjectRegions = newProject.regions;
+    // console.log('ProjectInput renderContent Project:', this.sendProjectId, '/', this.sendProjectStatus, '/', this.sendProjectRegions);
   }
 }
