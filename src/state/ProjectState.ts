@@ -1,5 +1,6 @@
+import { firebaseStoreDB, firebaseStorege } from "../fireconfig_v9";
 import { collection, getDoc, getDocs, QuerySnapshot } from "firebase/firestore";
-import { firebaseStoreDB } from "../fireconfig_v9";
+import { storage } from "firebase/storage";
 
 import { Project, ProjectStatus, getQueryObject } from "../types/Types";
 import { PrjInput } from "../app";
@@ -36,7 +37,7 @@ export class ProjectState {
         docStatus,
         docData.regions
       );
-      console.log(`${doc.id} => ${doc.data()}`, docData);
+      // console.log(`${doc.id} => ${doc.data()}`, docData);
       await this.projectContainer.push(newProject);
       if (newProject.id === this.queryObj.id) {
         await PrjInput.renderContent(newProject);
