@@ -69,13 +69,13 @@ export class ProjectItem implements Draggable {
     const addBtn = document.createElement("button");
     const addAnk = document.createElement("a");
 
-    addH2.textContent = this.getProject.title;
     addH3.textContent = this.getProject.description;
     addP1.textContent =
       "manday:" +
       this.getProject.manday.toString() +
-      `/ regions:` +
-      this.getProject.regions;
+      "/ id:" +
+      this.getProject.id;
+    /*"/ regions:" + this.getProject.regions*/
     addP2.textContent = this.getProject.manday.toString();
 
     addAnk.href = `?id=${this.getProject.id}&title=${this.getProject.title}`;
@@ -88,7 +88,8 @@ export class ProjectItem implements Draggable {
       // console.log(newBtn, this.project.id);
     };
 
-    const imagesRef = firebaseStorage
+    /* 
+       const imagesRef = firebaseStorage
       .ref()
       .child(`image/${this.getProject.id}`);
     imagesRef
@@ -110,7 +111,7 @@ export class ProjectItem implements Draggable {
       .catch(function (error) {
         console.error("Error getMetadata document: ", error);
       });
-
+*/
     this.editElements.appendChild(addH2);
     this.editElements.appendChild(addH3);
     this.editElements.appendChild(addP1);

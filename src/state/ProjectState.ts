@@ -1,5 +1,14 @@
+import {
+  collection,
+  getDoc,
+  getDocs,
+  QuerySnapshot,
+  doc,
+  setDoc,
+  updateDoc,
+  Timestamp
+} from "firebase/firestore";
 import { fireStoreDB } from "../fireconfig_v9";
-import { collection, getDoc, getDocs, QuerySnapshot } from "firebase/firestore";
 
 import {
   Project,
@@ -17,6 +26,7 @@ export class ProjectState {
   queryObj: getQueryObject = {};
 
   constructor() {
+    this.getQuery();
     this.initDB();
   }
 
@@ -25,6 +35,21 @@ export class ProjectState {
       return (this.instance = new ProjectState());
     }
     return this.instance;
+  }
+
+  getQuery() {
+    const queryString: string[] = location.search.substring(1).split("&");
+    // console.log(queryString);
+
+    if (queryString[0] !== "") {
+      for (const qryStr of queryString) {
+        const kv = qryStr.split("=");
+        this.queryObj[kv[0]] = kv[1];
+      }
+      // console.log('getQuery', this.queryObj);
+    }
+    // アドレスバー書き換え
+    // history.replaceState("", "", "./firetest.html");
   }
 
   async initDB() {
@@ -52,16 +77,32 @@ export class ProjectState {
   }
 
   async addProject(sendData: SendData, imgCheck?: boolean) {
+    const newProjectRef = doc(collection(fireStoreDB, "project"));
+
+    const projectDoc = {
+      id: newProjectRef.id,
+      title: sendData.title,
+      description: sendData.description,
+      manday: sendData.manday,
+      regions: Timestamp.fromDate(new Date()),
+      status: sendData.status
+    };
+
+    await setDoc(newProjectRef, projectDoc);
+    // console.log("addProject projectDoc:", projectDoc);
+
     const newProject = new Project(
-      sendData.id,
+      projectDoc.id,
       sendData.title,
       sendData.description,
       sendData.manday,
       sendData.status,
-      new Date()
+      projectDoc.regions
     );
+
     this.projectContainer.push(newProject);
     this.updateListeners();
+    return;
   }
 
   delProject(projectId: String) {
@@ -80,7 +121,7 @@ export class ProjectState {
     // console.log('updateListeners:', this.ListenerFunctions);
   }
 
-  moveProject(projectId: string, listType: "active" | "finished") {
+  async moveProject(projectId: string, listType: "active" | "finished") {
     const findProject = this.projectContainer.find((project) => {
       if (project.id === projectId) {
         return project;
@@ -91,6 +132,13 @@ export class ProjectState {
       findProject.state =
         listType === "active" ? ProjectStatus.Active : ProjectStatus.Finished;
     }
+
+    const updateRef = doc(fireStoreDB, "project", projectId);
+    await updateDoc(updateRef, {
+      status:
+        listType === "active" ? ProjectStatus.Active : ProjectStatus.Finished
+    });
+
     this.updateListeners();
     // console.log('moveProject:', findProject);
     return;

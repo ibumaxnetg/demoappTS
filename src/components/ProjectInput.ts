@@ -45,10 +45,6 @@ export class ProjectInput {
       "#photodel"
     )! as HTMLInputElement;
 
-    this.sendProjectId = "";
-    this.sendProjectStatus = ProjectStatus.Active;
-    this.sendProjectRegions = undefined;
-
     this.configure();
     this.attach();
   }
@@ -59,6 +55,11 @@ export class ProjectInput {
 
   submitHandler(event: Event) {
     event.preventDefault();
+
+    this.sendProjectId = rundStrCreate(12);
+    this.sendProjectStatus = ProjectStatus.Active;
+    this.sendProjectRegions = undefined;
+
     const inputTtlTex = this.inputTtlElem.value;
     const inputDescTex = this.inputDescElem.value;
     const inputMDTex = this.inputMDElem.value;
