@@ -1,7 +1,12 @@
 import { fireStoreDB } from "../fireconfig_v9";
 import { collection, getDoc, getDocs, QuerySnapshot } from "firebase/firestore";
 
-import { Project, ProjectStatus, getQueryObject } from "../types/Types";
+import {
+  Project,
+  SendData,
+  ProjectStatus,
+  getQueryObject
+} from "../types/Types";
 import { PrjInput } from "../app";
 
 export class ProjectState {
@@ -46,20 +51,13 @@ export class ProjectState {
     // console.log(this.projectContainer);
   }
 
-  addProject(
-    id: string,
-    title: string,
-    description: string,
-    manday: number,
-    imgFile?: File | null,
-    imgCheck?: boolean
-  ) {
+  async addProject(sendData: SendData, imgCheck?: boolean) {
     const newProject = new Project(
-      id,
-      title,
-      description,
-      manday,
-      ProjectStatus.Active,
+      sendData.id,
+      sendData.title,
+      sendData.description,
+      sendData.manday,
+      sendData.status,
       new Date()
     );
     this.projectContainer.push(newProject);

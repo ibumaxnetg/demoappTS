@@ -2,6 +2,8 @@ import { UserInputData, ProjectStatus } from "../types/Types";
 import { prjState } from "../app";
 import { rundStrCreate } from "../util/Util";
 
+import { Project, SendData } from "../types/Types";
+
 export class ProjectInput {
   baseElements: HTMLTemplateElement;
   outputElements: HTMLDivElement;
@@ -65,23 +67,18 @@ export class ProjectInput {
       : undefined;
     const inputImgDelChk = this.inputImgDelElem.checked;
 
-    const useInputData: UserInputData = {
+    const sendData: SendData = {
       title: inputTtlTex,
       description: inputDescTex,
       manday: +inputMDTex,
+      id: this.sendProjectId,
       imgFile: inputImgFile,
-      imgCheck: inputImgDelChk ? inputImgDelChk : false
+      status: this.sendProjectStatus,
+      regions: this.sendProjectRegions
     };
 
     if (inputTtlTex && inputDescTex && inputMDTex) {
-      prjState.addProject(
-        rundStrCreate(12),
-        useInputData.title,
-        useInputData.description,
-        useInputData.manday,
-        useInputData.imgFile,
-        useInputData.imgCheck
-      );
+      prjState.addProject(sendData, inputImgDelChk ? inputImgDelChk : false);
       // console.log("ProjectInput:", prjState.projectContainer);
 
       this.clearInput();

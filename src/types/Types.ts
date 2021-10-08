@@ -13,8 +13,18 @@ export class Project {
     public description: string,
     public manday: number,
     public state: ProjectStatus,
-    public regions: any
+    public regions: string
   ) {}
+}
+
+export interface SendData {
+  title: string;
+  description: string;
+  manday: number;
+  id?: string;
+  imgFile?: File;
+  status?: ProjectStatus | undefined;
+  regions?: string;
 }
 
 export enum ProjectStatus {
