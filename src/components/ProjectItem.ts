@@ -1,11 +1,13 @@
-import { firebaseStoreDB } from "../fireconfig_v9";
-import { firebaseStorage } from "../fireconfig_v8";
+// import { fireStoreDB } from "../fireconfig_v9";
+import { firebaseStorage } from "../fireStorageConfig";
 
-import { collection, getDoc, getDocs, QuerySnapshot } from "firebase/firestore";
-import { ref } from "firebase/storage";
+// import { collection, getDoc, getDocs, QuerySnapshot } from "firebase/firestore";
+import "firebase/compat/storage";
 
 import { Project } from "../types/Types";
 import { Draggable } from "../types/DragTypes";
+
+import { prjState } from "../app";
 
 export class ProjectItem implements Draggable {
   baseElements: HTMLTemplateElement;
@@ -58,45 +60,63 @@ export class ProjectItem implements Draggable {
     );
   }
 
-  renderContent() {
-    const pathReference = firebaseStorage.ref.child(`image/${this.getProject}`);
-    pathReference
-      .child("images/stars.jpg")
-      .getDownloadURL()
-      .then(function (url) {
-        // `url` is the download URL for 'images/stars.jpg'
-
-        // This can be downloaded directly:
-        var xhr = new XMLHttpRequest();
-        xhr.responseType = "blob";
-        xhr.onload = function (event) {
-          var blob = xhr.response;
-        };
-        xhr.open("GET", url);
-        xhr.send();
-
-        // Or inserted into an <img> element:
-        var img = document.getElementById("myimg");
-        img.src = url;
-      })
-      .catch(function (error) {
-        // Handle any errors
-      });
-
+  async renderContent() {
     const addH2 = document.createElement("h2");
+    const addH3 = document.createElement("h3");
     const addP1 = document.createElement("p");
     const addP2 = document.createElement("p");
-    const addP3 = document.createElement("p");
+    const addImg = document.createElement("img");
+    const addBtn = document.createElement("button");
+    const addAnk = document.createElement("a");
 
     addH2.textContent = this.getProject.title;
-    addP1.textContent = this.getProject.description;
+    addH3.textContent = this.getProject.description;
+    addP1.textContent =
+      "manday:" +
+      this.getProject.manday.toString() +
+      `/ regions:` +
+      this.getProject.regions;
     addP2.textContent = this.getProject.manday.toString();
-    addP3.textContent = "regions:" + this.getProject.regions;
+
+    addAnk.href = `?id=${this.getProject.id}&title=${this.getProject.title}`;
+    addAnk.textContent = this.getProject.title;
+    addH2.appendChild(addAnk);
+
+    addBtn.textContent = "削除する";
+    addBtn.onclick = async () => {
+      await prjState.delProject(this.getProject.id);
+      // console.log(newBtn, this.project.id);
+    };
+
+    const imagesRef = firebaseStorage
+      .ref()
+      .child(`image/${this.getProject.id}`);
+    imagesRef
+      .getDownloadURL()
+      .then((url) => {
+        addImg.setAttribute("src", url);
+      })
+      .catch((error) => {
+        console.error("Error printImg document: ", error);
+      });
+
+    await imagesRef
+      .getMetadata()
+      .then(function (metadata) {
+        // console.log('getMetadata', metadata);
+        addP2.textContent = `${metadata.contentType} ${metadata.size}`;
+        addImg.alt = metadata.contentType!.toString();
+      })
+      .catch(function (error) {
+        console.error("Error getMetadata document: ", error);
+      });
 
     this.editElements.appendChild(addH2);
+    this.editElements.appendChild(addH3);
     this.editElements.appendChild(addP1);
     this.editElements.appendChild(addP2);
-    this.editElements.appendChild(addP3);
+    this.editElements.appendChild(addImg);
+    this.editElements.appendChild(addBtn);
   }
 
   attach() {

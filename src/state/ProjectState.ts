@@ -1,6 +1,5 @@
-import { firebaseStoreDB, firebaseStorege } from "../fireconfig_v9";
+import { fireStoreDB } from "../fireconfig_v9";
 import { collection, getDoc, getDocs, QuerySnapshot } from "firebase/firestore";
-import { storage } from "firebase/storage";
 
 import { Project, ProjectStatus, getQueryObject } from "../types/Types";
 import { PrjInput } from "../app";
@@ -24,7 +23,7 @@ export class ProjectState {
   }
 
   async initDB() {
-    const querySnapshot = await getDocs(collection(firebaseStoreDB, "project"));
+    const querySnapshot = await getDocs(collection(fireStoreDB, "project"));
     querySnapshot.forEach(async (doc) => {
       const docData = doc.data();
       const docStatus =
@@ -65,6 +64,10 @@ export class ProjectState {
     );
     this.projectContainer.push(newProject);
     this.updateListeners();
+  }
+
+  delProject(projectId: String) {
+    console.log("delProject:");
   }
 
   addListener(listenerFn: Function) {
