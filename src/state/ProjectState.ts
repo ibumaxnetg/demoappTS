@@ -77,32 +77,60 @@ export class ProjectState {
   }
 
   async addProject(sendData: SendData, imgCheck?: boolean) {
-    const newProjectRef = doc(collection(fireStoreDB, "project"));
+    console.log("addroject sendData.id:", sendData.status);
+    if (sendData.id === "" || sendData.id === undefined) {
+      // 追加処理
+      const newProjectRef = doc(collection(fireStoreDB, "project"));
 
-    const projectDoc = {
-      id: newProjectRef.id,
-      title: sendData.title,
-      description: sendData.description,
-      manday: sendData.manday,
-      regions: Timestamp.fromDate(new Date()),
-      status: sendData.status
-    };
+      const projectDoc = {
+        id: newProjectRef.id,
+        title: sendData.title,
+        description: sendData.description,
+        manday: sendData.manday,
+        regions: Timestamp.fromDate(new Date()),
+        status: sendData.status
+      };
 
-    await setDoc(newProjectRef, projectDoc);
-    // console.log("addProject projectDoc:", projectDoc);
+      await setDoc(newProjectRef, projectDoc);
+      // console.log("addProject projectDoc:", projectDoc);
 
-    const newProject = new Project(
-      projectDoc.id,
-      sendData.title,
-      sendData.description,
-      sendData.manday,
-      sendData.status,
-      projectDoc.regions
-    );
+      const newProject = new Project(
+        projectDoc.id,
+        sendData.title,
+        sendData.description,
+        sendData.manday,
+        sendData.status,
+        projectDoc.regions
+      );
+      this.projectContainer.push(newProject);
+    } else {
+      // 更新処理
+      const updataRef = doc(fireStoreDB, "project", sendData.id);
 
-    this.projectContainer.push(newProject);
+      await updateDoc(updataRef, {
+        title: sendData.title,
+        description: sendData.description,
+        manday: sendData.manday,
+        status: sendData.status
+      });
+    }
+
+    this.changeProjectData(sendData);
     this.updateListeners();
     return;
+  }
+
+  changeProjectData(project: Project) {
+    const changeProject = this.projectContainer.find((findProject) => {
+      return project.id === findProject.id;
+    });
+
+    console.log("changeProject:", changeProject);
+    if (changeProject) {
+      changeProject.title = project.title;
+      changeProject.description = project.description;
+      changeProject.manday = project.manday;
+    }
   }
 
   delProject(projectId: String) {
@@ -129,7 +157,7 @@ export class ProjectState {
     });
 
     if (findProject) {
-      findProject.state =
+      findProject.status =
         listType === "active" ? ProjectStatus.Active : ProjectStatus.Finished;
     }
 

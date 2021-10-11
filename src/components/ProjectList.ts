@@ -32,10 +32,10 @@ export class ProjectList implements DragTarget {
     prjState.addListener((project: Project[]) => {
       const tmpProjects = prjState.projectContainer.filter((project) => {
         if (this.listType === "active") {
-          return project.state === ProjectStatus.Active;
+          return project.status === ProjectStatus.Active;
         }
         if (this.listType === "finished") {
-          return project.state === ProjectStatus.Finished;
+          return project.status === ProjectStatus.Finished;
         }
       });
 

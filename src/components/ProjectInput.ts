@@ -15,9 +15,9 @@ export class ProjectInput {
   inputImgElem: HTMLInputElement;
   inputImgDelElem: HTMLInputElement;
 
-  sendProjectId: string;
-  sendProjectStatus: ProjectStatus;
-  sendProjectRegions: Date | undefined;
+  sendProjectId: string = "";
+  sendProjectStatus: ProjectStatus = ProjectStatus.Active;
+  sendProjectRegions: any = undefined;
 
   constructor() {
     this.baseElements = document.getElementById(
@@ -55,10 +55,6 @@ export class ProjectInput {
 
   submitHandler(event: Event) {
     event.preventDefault();
-
-    this.sendProjectId = rundStrCreate(12);
-    this.sendProjectStatus = ProjectStatus.Active;
-    this.sendProjectRegions = undefined;
 
     const inputTtlTex = this.inputTtlElem.value;
     const inputDescTex = this.inputDescElem.value;
@@ -107,6 +103,6 @@ export class ProjectInput {
     this.sendProjectId = newProject.id;
     this.sendProjectStatus = newProject.status;
     this.sendProjectRegions = newProject.regions;
-    // console.log('ProjectInput renderContent Project:', this.sendProjectId, '/', this.sendProjectStatus, '/', this.sendProjectRegions);
+    console.log("ProjectInput renderContent Project:", newProject);
   }
 }

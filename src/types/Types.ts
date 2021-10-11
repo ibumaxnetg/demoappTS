@@ -12,7 +12,7 @@ export class Project {
     public title: string,
     public description: string,
     public manday: number,
-    public state: ProjectStatus,
+    public status: ProjectStatus,
     public regions: string
   ) {}
 }
