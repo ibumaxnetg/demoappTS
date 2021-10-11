@@ -6,6 +6,7 @@ import {
   doc,
   setDoc,
   updateDoc,
+  deleteDoc,
   Timestamp
 } from "firebase/firestore";
 import { fireStoreDB } from "../fireconfig_v9";
@@ -77,7 +78,7 @@ export class ProjectState {
   }
 
   async addProject(sendData: SendData, imgCheck?: boolean) {
-    console.log("addroject sendData.id:", sendData.status);
+    // console.log("addroject sendData.id:", sendData.status);
     if (sendData.id === "" || sendData.id === undefined) {
       // 追加処理
       const newProjectRef = doc(collection(fireStoreDB, "project"));
@@ -113,14 +114,14 @@ export class ProjectState {
         manday: sendData.manday,
         status: sendData.status
       });
+      this.changeProjectData(sendData);
     }
 
-    this.changeProjectData(sendData);
     this.updateListeners();
     return;
   }
 
-  changeProjectData(project: Project) {
+  changeProjectData(project: SendData) {
     const changeProject = this.projectContainer.find((findProject) => {
       return project.id === findProject.id;
     });
@@ -133,8 +134,22 @@ export class ProjectState {
     }
   }
 
-  delProject(projectId: String) {
-    console.log("delProject:");
+  async delProject(projectId: string) {
+    // console.log("delProject:", projectId);
+    if (projectId) {
+      // 配列から削除
+      const remainingProject = this.projectContainer.filter((project) => {
+        if (projectId !== project.id) {
+          return project;
+        }
+      });
+      this.projectContainer = remainingProject;
+
+      // DBから削除
+      await deleteDoc(doc(fireStoreDB, "project", projectId));
+    }
+    // console.log(this.projectContainer);
+    this.updateListeners();
   }
 
   addListener(listenerFn: Function) {
