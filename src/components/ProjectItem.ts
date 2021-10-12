@@ -1,3 +1,4 @@
+import { Timestamp } from "firebase/firestore";
 // import { fireStoreDB } from "../fireconfig_v9";
 import { firebaseStorage } from "../fireStorageConfig";
 
@@ -74,8 +75,10 @@ export class ProjectItem implements Draggable {
       "manday:" +
       this.getProject.manday.toString() +
       "/ id:" +
-      this.getProject.id;
-    /*"/ regions:" + this.getProject.regions*/
+      this.getProject.id +
+      "/ regions:" +
+      new Date(this.getProject.regions.seconds);
+
     addP2.textContent = this.getProject.manday.toString();
 
     addAnk.href = `?id=${this.getProject.id}&title=${this.getProject.title}`;

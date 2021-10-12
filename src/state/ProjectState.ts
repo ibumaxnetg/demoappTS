@@ -21,6 +21,7 @@ import {
   getQueryObject
 } from "../types/Types";
 import { PrjInput } from "../app";
+import { ImageReSizeClass } from "../util/ResizeUtili";
 
 export class ProjectState {
   private static instance: ProjectState;
@@ -85,13 +86,13 @@ export class ProjectState {
     if (sendData.id === "" || sendData.id === undefined) {
       // 追加処理
       const newProjectRef = doc(collection(fireStoreDB, "project"));
-
+      const regTimestamp: Timestamp = Timestamp.fromDate(new Date());
       const projectDoc = {
         id: newProjectRef.id,
         title: sendData.title,
         description: sendData.description,
         manday: sendData.manday,
-        regions: Timestamp.fromDate(new Date()),
+        regions: regTimestamp,
         status: sendData.status
       };
 
@@ -122,19 +123,27 @@ export class ProjectState {
     }
 
     if (sendData.imgFile) {
+      const imgReSizeNum = 400;
       const metadata = {
         contentType: sendData.imgFile.type
       };
 
-      const imgData: File = sendData.imgFile;
-      const upImgRef = await firebaseStorage
-        .ref()
-        .child(`image/${sendData.id}`)
-        .put(imgData, metadata)
-        .then((snapshot) => {
-          console.log("Uploaded a blob or file!", snapshot);
-        });
-      console.log("imgUpload:", upImgRef);
+      const resizeClass = new ImageReSizeClass();
+      const resizableImg:
+        | File
+        | undefined
+        | void = await resizeClass.resizeImage(sendData.imgFile, imgReSizeNum);
+
+      if (resizableImg) {
+        const upImgRef = await firebaseStorage
+          .ref()
+          .child(`image/${sendData.id}`)
+          .put(resizableImg, metadata)
+          .then((snapshot) => {
+            console.log("Uploaded a blob or file!", snapshot);
+          });
+        console.log("imgUpload:", upImgRef);
+      }
     }
 
     if (imgDelCheck === true) {

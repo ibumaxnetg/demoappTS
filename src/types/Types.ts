@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore";
+
 export interface UserInputData {
   title: string;
   description: string;
@@ -13,7 +15,7 @@ export class Project {
     public description: string,
     public manday: number,
     public status: ProjectStatus,
-    public regions: number
+    public regions: Timestamp
   ) {}
 }
 
@@ -24,7 +26,7 @@ export interface SendData {
   id?: string;
   imgFile?: File;
   status?: ProjectStatus | undefined;
-  regions?: number;
+  regions?: Timestamp;
 }
 
 export enum ProjectStatus {
