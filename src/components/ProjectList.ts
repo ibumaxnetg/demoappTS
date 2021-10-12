@@ -11,7 +11,7 @@ export class ProjectList implements DragTarget {
 
   assignedProjects: Project[];
 
-  constructor(private listType: string) {
+  constructor(private listType: "active" | "finished") {
     this.baseElements = document.getElementById(
       "project-list"
     )! as HTMLTemplateElement;

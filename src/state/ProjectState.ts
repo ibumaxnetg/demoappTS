@@ -11,6 +11,9 @@ import {
 } from "firebase/firestore";
 import { fireStoreDB } from "../fireconfig_v9";
 
+import { firebaseStorage } from "../fireStorageConfig";
+import "firebase/compat/storage";
+
 import {
   Project,
   SendData,
@@ -77,7 +80,7 @@ export class ProjectState {
     // console.log(this.projectContainer);
   }
 
-  async addProject(sendData: SendData, imgCheck?: boolean) {
+  async addProject(sendData: SendData, imgDelCheck: boolean) {
     // console.log("addroject sendData.id:", sendData.status);
     if (sendData.id === "" || sendData.id === undefined) {
       // 追加処理
@@ -100,10 +103,11 @@ export class ProjectState {
         sendData.title,
         sendData.description,
         sendData.manday,
-        sendData.status,
+        sendData.status === 0 ? ProjectStatus.Active : ProjectStatus.Finished,
         projectDoc.regions
       );
       this.projectContainer.push(newProject);
+      sendData.id = projectDoc.id;
     } else {
       // 更新処理
       const updataRef = doc(fireStoreDB, "project", sendData.id);
@@ -117,6 +121,34 @@ export class ProjectState {
       this.changeProjectData(sendData);
     }
 
+    if (sendData.imgFile) {
+      const metadata = {
+        contentType: sendData.imgFile.type
+      };
+
+      const imgData: File = sendData.imgFile;
+      const upImgRef = await firebaseStorage
+        .ref()
+        .child(`image/${sendData.id}`)
+        .put(imgData, metadata)
+        .then((snapshot) => {
+          console.log("Uploaded a blob or file!", snapshot);
+        });
+      console.log("imgUpload:", upImgRef);
+    }
+
+    if (imgDelCheck === true) {
+      const imgDelRef = firebaseStorage.ref().child(`image/${sendData.id}`);
+      imgDelRef
+        .delete()
+        .then(function (docRef) {
+          console.log("imgDelete success:", docRef);
+        })
+        .catch(function (error: string) {
+          console.log("imgDelete error:", error);
+        });
+      console.log(imgDelRef);
+    }
     this.updateListeners();
     return;
   }
