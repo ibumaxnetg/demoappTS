@@ -91,7 +91,7 @@ export class ProjectItem implements Draggable {
       // console.log(newBtn, this.project.id);
     };
 
-    /* */
+    /* image DownLoad
     const imagesRef = firebaseStorage
       .ref()
       .child(`image/${this.getProject.id}`);
@@ -114,6 +114,7 @@ export class ProjectItem implements Draggable {
       .catch(function (error) {
         console.error("Error getMetadata document: ", error);
       });
+*/
 
     this.editElements.appendChild(addH2);
     this.editElements.appendChild(addH3);
